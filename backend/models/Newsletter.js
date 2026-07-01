@@ -1,8 +1,23 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const NewsletterSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true, lowercase: true },
-  isActive: { type: Boolean, default: true },
-}, { timestamps: true });
+const NewsletterModel = sequelize.define('Newsletter', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Newsletter', NewsletterSchema);
+module.exports = new MongooseCompat(NewsletterModel, 'Newsletter');

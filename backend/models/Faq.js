@@ -1,9 +1,26 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const FaqSchema = new mongoose.Schema({
-  question: { type: String, required: true },
-  answer: { type: String, required: true },
-  order: { type: Number, default: 0 },
-}, { timestamps: true });
+const FaqModel = sequelize.define('Faq', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  question: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  answer: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  order: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Faq', FaqSchema);
+module.exports = new MongooseCompat(FaqModel, 'Faq');

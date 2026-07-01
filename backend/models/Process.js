@@ -1,11 +1,34 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const ProcessSchema = new mongoose.Schema({
-  step: { type: String, required: true }, // e.g. "01", "02"
-  name: { type: String, required: true },
-  photo: { type: String }, // Icon identifier or photo URL
-  description: { type: String, required: true },
-  order: { type: Number, default: 0 },
-}, { timestamps: true });
+const ProcessModel = sequelize.define('Process', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  step: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  photo: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  order: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Process', ProcessSchema);
+module.exports = new MongooseCompat(ProcessModel, 'Process');

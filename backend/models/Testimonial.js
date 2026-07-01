@@ -1,15 +1,50 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const TestimonialSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  role: { type: String, required: true },
-  company: { type: String, required: true },
-  avatar: { type: String },
-  rating: { type: Number, min: 1, max: 5, default: 5 },
-  feedback: { type: String, required: true },
-  project: { type: String },
-  featured: { type: Boolean, default: true },
-  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
-}, { timestamps: true });
+const TestimonialModel = sequelize.define('Testimonial', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  company: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  avatar: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  rating: {
+    type: DataTypes.INTEGER,
+    defaultValue: 5
+  },
+  feedback: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  project: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  featured: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  status: {
+    type: DataTypes.ENUM('active', 'inactive'),
+    defaultValue: 'active'
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Testimonial', TestimonialSchema);
+module.exports = new MongooseCompat(TestimonialModel, 'Testimonial');

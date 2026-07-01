@@ -1,26 +1,73 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const ServiceSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, unique: true },
-  icon: { type: String },
-  description: { type: String, required: true },
-  shortDescription: { type: String },
-  category: { type: String, required: true },
-  features: [{ type: String }],
-  technologies: [{ type: String }],
-  price: { type: String },
-  duration: { type: String },
-  featured: { type: Boolean, default: false },
-  order: { type: Number, default: 0 },
-  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
-}, { timestamps: true });
-
-ServiceSchema.pre('save', function (next) {
-  if (!this.slug) {
-    this.slug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const ServiceModel = sequelize.define('Service', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  slug: {
+    type: DataTypes.STRING,
+    unique: true
+  },
+  icon: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  shortDescription: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  category: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  features: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  technologies: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  price: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  duration: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  featured: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  order: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  status: {
+    type: DataTypes.ENUM('active', 'inactive'),
+    defaultValue: 'active'
   }
-  next();
+}, {
+  timestamps: true,
+  hooks: {
+    beforeValidate: (service) => {
+      if (service.title && !service.slug) {
+        service.slug = service.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-');
+      }
+    }
+  }
 });
 
-module.exports = mongoose.model('Service', ServiceSchema);
+module.exports = new MongooseCompat(ServiceModel, 'Service');

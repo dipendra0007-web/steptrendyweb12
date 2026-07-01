@@ -1,36 +1,97 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const PortfolioSchema = new mongoose.Schema({
-  title: { type: String, required: true, trim: true },
-  slug: { type: String, unique: true, lowercase: true },
-  category: {
-    type: String,
-    enum: ['web', 'mobile', 'ui-ux', 'branding', 'ai', 'software'],
-    required: true
+const PortfolioModel = sequelize.define('Portfolio', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
   },
-  client: { type: String, required: true },
-  technologies: [{ type: String }],
-  description: { type: String, required: true },
-  shortDescription: { type: String },
-  coverImage: { type: String, required: true },
-  images: [{ type: String }],
-  colorPalette: [{ name: String, hex: String }],
-  typography: [{ name: String, usage: String }],
-  liveUrl: { type: String },
-  githubUrl: { type: String },
-  duration: { type: String },
-  featured: { type: Boolean, default: false },
-  status: { type: String, enum: ['draft', 'published'], default: 'published' },
-  likes: { type: Number, default: 0 },
-  views: { type: Number, default: 0 },
-  tags: [{ type: String }],
-}, { timestamps: true });
-
-PortfolioSchema.pre('save', function (next) {
-  if (!this.slug) {
-    this.slug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  slug: {
+    type: DataTypes.STRING,
+    unique: true
+  },
+  category: {
+    type: DataTypes.ENUM('web', 'mobile', 'ui-ux', 'branding', 'ai', 'software'),
+    allowNull: false
+  },
+  client: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  technologies: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  shortDescription: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  coverImage: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  images: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  colorPalette: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  typography: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  liveUrl: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  githubUrl: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  duration: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  featured: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  status: {
+    type: DataTypes.ENUM('draft', 'published'),
+    defaultValue: 'published'
+  },
+  likes: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  views: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  tags: {
+    type: DataTypes.JSON,
+    defaultValue: []
   }
-  next();
+}, {
+  timestamps: true,
+  hooks: {
+    beforeValidate: (portfolio) => {
+      if (portfolio.title && !portfolio.slug) {
+        portfolio.slug = portfolio.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+    }
+  }
 });
 
-module.exports = mongoose.model('Portfolio', PortfolioSchema);
+module.exports = new MongooseCompat(PortfolioModel, 'Portfolio');

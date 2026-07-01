@@ -1,9 +1,27 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const TechStackSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  photo: { type: String, required: true }, // Image/logo URL
-  order: { type: Number, default: 0 },
-}, { timestamps: true });
+const TechStackModel = sequelize.define('TechStack', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  photo: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  order: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  }
+}, {
+  tableName: 'TechStacks',
+  timestamps: true
+});
 
-module.exports = mongoose.model('TechStack', TechStackSchema);
+module.exports = new MongooseCompat(TechStackModel, 'TechStack');

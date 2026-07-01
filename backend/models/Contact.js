@@ -1,14 +1,46 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const MongooseCompat = require('./MongooseCompat');
 
-const ContactSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, lowercase: true },
-  phone: { type: String },
-  company: { type: String },
-  budget: { type: String },
-  projectDetails: { type: String, required: true },
-  status: { type: String, enum: ['new', 'read', 'replied', 'closed'], default: 'new' },
-  ipAddress: { type: String },
-}, { timestamps: true });
+const ContactModel = sequelize.define('Contact', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  phone: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  company: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  budget: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  },
+  projectDetails: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  status: {
+    type: DataTypes.ENUM('new', 'read', 'replied', 'closed'),
+    defaultValue: 'new'
+  },
+  ipAddress: {
+    type: DataTypes.STRING,
+    defaultValue: ''
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('Contact', ContactSchema);
+module.exports = new MongooseCompat(ContactModel, 'Contact');
