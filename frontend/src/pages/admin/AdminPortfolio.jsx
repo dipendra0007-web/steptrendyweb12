@@ -5,13 +5,16 @@ import { Plus, Edit2, Trash2, Eye, ArrowLeft, X, Save, Loader } from 'lucide-rea
 import { useForm } from 'react-hook-form';
 import { portfolioAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
+import ImageUpload from '../../components/common/ImageUpload';
 
 const categories = ['web', 'mobile', 'ui-ux', 'branding', 'ai', 'software'];
 
 function PortfolioForm({ item, onSave, onCancel }) {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm({
     defaultValues: item || {}
   });
+
+  const coverImage = watch('coverImage');
 
   const onSubmit = async (data) => {
     data.technologies = data.technologies?.split(',').map(t => t.trim()).filter(Boolean) || [];
@@ -53,8 +56,14 @@ function PortfolioForm({ item, onSave, onCancel }) {
               <input {...register('client', { required: true })} className="input-dark" placeholder="Client Name" />
             </div>
             <div className="col-span-2">
-              <label className="block text-gray-400 text-sm mb-1.5">Cover Image URL *</label>
-              <input {...register('coverImage', { required: true })} className="input-dark" placeholder="https://..." />
+              <ImageUpload
+                value={coverImage}
+                onChange={(url) => setValue('coverImage', url)}
+                label="Cover Image *"
+                aspect="video"
+              />
+              <input type="hidden" {...register('coverImage', { required: true })} />
+              {errors.coverImage && <span className="text-xs text-rose-500 block mt-1">Cover image is required</span>}
             </div>
             <div className="col-span-2">
               <label className="block text-gray-400 text-sm mb-1.5">Short Description</label>

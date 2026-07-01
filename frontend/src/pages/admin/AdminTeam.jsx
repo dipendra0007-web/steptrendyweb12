@@ -5,15 +5,18 @@ import { Plus, Edit2, Trash2, ArrowLeft, X, Save, Loader, Mail, Phone } from 'lu
 import { useForm } from 'react-hook-form';
 import { teamAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
+import ImageUpload from '../../components/common/ImageUpload';
 
 function TeamForm({ item, onSave, onCancel }) {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({
+  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({
     defaultValues: item ? {
       ...item,
       linkedIn: item.socialLinks?.find(s => s.name === 'LinkedIn')?.link || '',
       gitHub: item.socialLinks?.find(s => s.name === 'GitHub')?.link || ''
     } : {}
   });
+
+  const photo = watch('photo');
   
   const onSubmit = async (data) => {
     const socialLinks = [];
@@ -71,8 +74,12 @@ function TeamForm({ item, onSave, onCancel }) {
             </div>
           </div>
           <div>
-            <label className="block text-gray-400 text-sm mb-1.5">Photo URL</label>
-            <input {...register('photo')} className="input-dark" placeholder="https://..." />
+            <ImageUpload
+              value={photo}
+              onChange={(url) => setValue('photo', url)}
+              label="Photo"
+              aspect="square"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

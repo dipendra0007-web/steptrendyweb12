@@ -50,6 +50,14 @@ exports.getStats = async (req, res, next) => {
 exports.uploadImage = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-    res.json({ success: true, url: req.file.path, public_id: req.file.filename });
+    
+    let url = req.file.path;
+    // If it's a local filesystem upload, req.file.path will not start with http or https.
+    // Convert it to the relative public URL path.
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+      url = `/uploads/${req.file.filename}`;
+    }
+    
+    res.json({ success: true, url, public_id: req.file.filename || req.file.public_id });
   } catch (err) { next(err); }
 };

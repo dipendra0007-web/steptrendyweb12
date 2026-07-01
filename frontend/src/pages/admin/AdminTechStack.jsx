@@ -5,9 +5,11 @@ import { Plus, Edit2, Trash2, ArrowLeft, X, Save, Loader } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { techStackAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
+import ImageUpload from '../../components/common/ImageUpload';
 
 function TechForm({ item, onSave, onCancel }) {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues: item || {} });
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm({ defaultValues: item || {} });
+  const photo = watch('photo');
   
   const onSubmit = async (data) => {
     try {
@@ -37,8 +39,14 @@ function TechForm({ item, onSave, onCancel }) {
             <input {...register('name', { required: true })} className="input-dark" placeholder="e.g. React.js" />
           </div>
           <div>
-            <label className="block text-gray-400 text-sm mb-1.5">Logo URL (svg/png) *</label>
-            <input {...register('photo', { required: true })} className="input-dark" placeholder="https://..." />
+            <ImageUpload
+              value={photo}
+              onChange={(url) => setValue('photo', url)}
+              label="Logo (SVG/PNG) *"
+              aspect="square"
+            />
+            <input type="hidden" {...register('photo', { required: true })} />
+            {errors.photo && <span className="text-xs text-rose-500 block mt-1">Logo image is required</span>}
           </div>
           <div>
             <label className="block text-gray-400 text-sm mb-1.5">Display Order</label>

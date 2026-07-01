@@ -5,9 +5,12 @@ import { useForm } from 'react-hook-form';
 import { blogAPI } from '../../utils/api';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import ImageUpload from '../../components/common/ImageUpload';
 
 function BlogForm({ item, onSave, onCancel }) {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues: item || { status: 'published' } });
+  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({ defaultValues: item || { status: 'published' } });
+  const coverImage = watch('coverImage');
+
   const onSubmit = async (data) => {
     data.tags = data.tags?.split(',').map(t => t.trim()).filter(Boolean) || [];
     try {
@@ -29,7 +32,14 @@ function BlogForm({ item, onSave, onCancel }) {
             <div><label className="block text-gray-400 text-sm mb-1.5">Category *</label><input {...register('category', { required: true })} className="input-dark" placeholder="Design, Dev, AI..." /></div>
             <div><label className="block text-gray-400 text-sm mb-1.5">Author</label><input {...register('author')} className="input-dark" placeholder="StepTrendy Team" /></div>
           </div>
-          <div><label className="block text-gray-400 text-sm mb-1.5">Cover Image URL</label><input {...register('coverImage')} className="input-dark" placeholder="https://..." /></div>
+          <div>
+            <ImageUpload
+              value={coverImage}
+              onChange={(url) => setValue('coverImage', url)}
+              label="Cover Image"
+              aspect="video"
+            />
+          </div>
           <div><label className="block text-gray-400 text-sm mb-1.5">Excerpt *</label><textarea {...register('excerpt', { required: true })} className="input-dark resize-none" rows={2} placeholder="Short description..." /></div>
           <div><label className="block text-gray-400 text-sm mb-1.5">Content *</label><textarea {...register('content', { required: true })} className="input-dark resize-none font-mono text-sm" rows={10} placeholder="Full blog post content (supports ## headings, paragraphs)" /></div>
           <div className="grid grid-cols-2 gap-4">

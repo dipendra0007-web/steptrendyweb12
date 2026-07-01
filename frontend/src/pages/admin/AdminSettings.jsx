@@ -5,6 +5,7 @@ import { ArrowLeft, Save, Loader, Plus, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { settingAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
+import ImageUpload from '../../components/common/ImageUpload';
 
 export default function AdminSettings() {
   const [loading, setLoading] = useState(true);
@@ -12,7 +13,10 @@ export default function AdminSettings() {
   const [socials, setSocials] = useState([]);
   const [workingHours, setWorkingHours] = useState([]);
   
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm();
+
+  const logo = watch('logo');
+  const favicon = watch('favicon');
 
   useEffect(() => {
     const fetch = async () => {
@@ -126,13 +130,21 @@ export default function AdminSettings() {
                 <label className="block text-gray-400 text-sm mb-1.5">Copyright Text</label>
                 <input {...register('copyrightText')} className="input-dark" placeholder="© 2026 StepTrendy..." />
               </div>
-              <div>
-                <label className="block text-gray-400 text-sm mb-1.5">Logo Path/URL</label>
-                <input {...register('logo')} className="input-dark" placeholder="/logo.png" />
+              <div className="flex flex-col gap-2">
+                <ImageUpload
+                  value={logo}
+                  onChange={(url) => setValue('logo', url)}
+                  label="Logo"
+                  aspect="square"
+                />
               </div>
-              <div>
-                <label className="block text-gray-400 text-sm mb-1.5">Favicon Path/URL</label>
-                <input {...register('favicon')} className="input-dark" placeholder="/favicon.ico" />
+              <div className="flex flex-col gap-2">
+                <ImageUpload
+                  value={favicon}
+                  onChange={(url) => setValue('favicon', url)}
+                  label="Favicon"
+                  aspect="square"
+                />
               </div>
             </div>
           </div>

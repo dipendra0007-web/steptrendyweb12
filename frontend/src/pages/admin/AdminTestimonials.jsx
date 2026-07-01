@@ -5,9 +5,12 @@ import { useForm } from 'react-hook-form';
 import { testimonialAPI } from '../../utils/api';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import ImageUpload from '../../components/common/ImageUpload';
 
 function TestimonialForm({ item, onSave, onCancel }) {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({ defaultValues: item || { rating: 5 } });
+  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({ defaultValues: item || { rating: 5 } });
+  const avatar = watch('avatar');
+
   const onSubmit = async (data) => {
     data.rating = Number(data.rating);
     try {
@@ -34,7 +37,14 @@ function TestimonialForm({ item, onSave, onCancel }) {
               {[5,4,3,2,1].map(r => <option key={r} value={r} className="bg-dark">{r} Stars</option>)}
             </select>
           </div>
-          <div><label className="block text-gray-400 text-sm mb-1.5">Avatar URL</label><input {...register('avatar')} className="input-dark" placeholder="https://..." /></div>
+          <div>
+            <ImageUpload
+              value={avatar}
+              onChange={(url) => setValue('avatar', url)}
+              label="Avatar"
+              aspect="square"
+            />
+          </div>
           <div><label className="block text-gray-400 text-sm mb-1.5">Feedback *</label><textarea {...register('feedback', { required: true })} className="input-dark resize-none" rows={4} placeholder="Client feedback..." /></div>
           <div><label className="block text-gray-400 text-sm mb-1.5">Project Name</label><input {...register('project')} className="input-dark" placeholder="Project Name" /></div>
           <div className="flex gap-3 pt-2">
